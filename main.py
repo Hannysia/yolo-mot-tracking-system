@@ -1,39 +1,37 @@
 import shutil
 import os
-import cv2  # Додали OpenCV для конвертації відео
+import cv2
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from ultralytics import YOLO
 
 app = FastAPI(
     title="YOLOv8 MOT Tracker API",
-    description="API для детекції та трекінгу об'єктів на відео",
+    description="API for detecting and tracking objects in videos",
     version="1.0"
 )
 
 model = YOLO('best.pt')
 
-@app.get("/")
-def read_root():
-    return {"status": "Active", "message": "Welcome to YOLOv8 API. Go to /docs to test it."}
+@app.get("/", include_in_schema=False)
+async def read_root():
+    return RedirectResponse(url="/docs")
+
 
 def convert_to_compatible_format(input_path: str, output_path: str):
     """
-    Перекодовує відео в формат .avi (MJPEG), який гарантовано
-    відкривається стандартним плеєром Windows.
+    Recodes video into .avi (MJPEG) format, which is guaranteed to
+    open with the standard Windows player.
     """
     cap = cv2.VideoCapture(input_path)
     
-    # Отримуємо параметри відео
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     
-    # Якщо FPS зчитався криво (буває 0), ставимо стандартний 30
     if fps == 0:
         fps = 30.0
 
-    # Ініціалізуємо запис у формат AVI / MJPEG
     fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
@@ -49,16 +47,14 @@ def convert_to_compatible_format(input_path: str, output_path: str):
 
 @app.post("/predict/video", response_class=FileResponse)
 async def predict_video(file: UploadFile = File(...)):
-    # А. Зберігаємо завантажене відео
+
     temp_filename = f"temp_{file.filename}"
     with open(temp_filename, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Б. Очищаємо папку runs
     if os.path.exists("runs"):
         shutil.rmtree("runs", ignore_errors=True)
 
-    # В. Запускаємо YOLO
     try:
         results = model.track(
             source=temp_filename,
@@ -92,7 +88,7 @@ async def predict_video(file: UploadFile = File(...)):
         return FileResponse(
             path=final_video_path, 
             media_type="video/x-msvideo", 
-            filename="processed_result.avi" # Тепер віддаємо .avi
+            filename="processed_result.avi" 
         )
     else:
         return JSONResponse(content={"error": "Processing failed"}, status_code=500)

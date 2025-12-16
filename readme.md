@@ -1,162 +1,99 @@
-# **YOLOv8 MOT Tracking System**
+# YOLOv8 MOT Tracking System
 
-System for object detection and tracking based on YOLOv8 (fine-tuned on MOT17) and ByteTrack.
-Wrapped in FastAPI and containerized with Docker.
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 
-## **Features**
+A FastAPI-based application for object detection and tracking using a fine-tuned YOLOv8 model and ByteTrack algorithm. The system processes video inputs to detect pedestrians, track their IDs across frames, and output a compatible AVI video file.
 
-Custom Model: YOLOv8n fine-tuned on MOT17 dataset (Pedestrian detection).
+## Features
 
-Tracker: ByteTrack algorithm for stable ID assignment.
+* **Custom Detection:** YOLOv8n model fine-tuned on the MOT17 dataset specifically for pedestrian detection.
+* **Advanced Tracking:** Implements ByteTrack for robust ID assignment and trajectory tracking, handling occlusions effectively.
+* **Compatibility:** Automatically converts processed video to `.avi` (MJPEG) format to ensure playback compatibility on Windows default media players.
+* **Containerization:** Fully dockerized application for consistent deployment across environments.
 
-Robust Output: Automatically converts video to .avi (MJPEG) for maximum compatibility with Windows players.
+## Technology Stack
 
-Easy Deploy: One-command setup via Docker.
+* **Core:** Python 3.10
+* **ML/AI:** PyTorch, Ultralytics YOLOv8
+* **Computer Vision:** OpenCV (Headless)
+* **Backend:** FastAPI, Uvicorn
 
-## **Tech Stack**
+## Prerequisites
 
-ML: PyTorch, Ultralytics YOLOv8
+Before running the project, ensure you have the following installed:
 
-Backend: FastAPI, Uvicorn
+* **Docker** (for containerized run)
+* **Python 3.10+** and **Git** (for local development)
 
-Containerization: Docker (Python 3.10-slim)
+## Installation and Execution
 
+### Option 1: Docker (Recommended)
 
-## **How to Run**
+This method requires no local Python configuration.
 
-### **Option 1: Quick Start (via Docker Hub)**
-
-The fastest way. No need to download code or build anything.
-
-```
+1.  **Pull and run the pre-built image:**
+    ```bash
     docker run -p 8000:8000 anykn/yolo-mot-app:v1.0
-```
+    ```
 
-Docker will automatically pull the image and start the server.
-
-### **Option 2: Build from Source (Docker)**
-
-If you want to build the image yourself from this code.
-
-1. Build the Image:
-
-```
+2.  **Or build from source:**
+    ```bash
     docker build -t yolo-mot-app .
-```
-
-2. Run the Container:
-
-```
     docker run -p 8000:8000 yolo-mot-app
-```
+    ```
 
-Usage
+### Option 2: Local Development
 
-Once the server is running, open your browser:
-👉 http://localhost:8000/docs
+Follow these steps to run the application directly on your machine.
 
-Click on POST /predict/video.
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd yolo-mot-tracking-system
+    ```
 
-Click Try it out.
+2.  **Create and activate a virtual environment:**
 
-Upload your video file (.mp4 or .avi).
+    * *Windows:*
+        ```bash
+        python -m venv venv
+        .\venv\Scripts\activate
+        ```
 
-Click Execute and download the processed result.
+    * *Linux / macOS:*
+        ```bash
+        python3 -m venv venv
+        source venv/bin/activate
+        ```
 
-### **Local Development (No Docker)**
-
-If you want to run it without Docker:
-
-1. Create venv and install dependencies:
-
-```
+3.  **Install dependencies:**
+    ```bash
     pip install -r requirements.txt
-```
+    ```
 
-2. Run server:
-
-```
+4.  **Start the server:**
+    ```bash
     uvicorn main:app --reload
-```
+    ```
 
+## Usage
 
+1.  **Start the server.**
+    Once the container or script is running, open your browser and go to:
+    👉 `http://localhost:8000`
+    *(You will be automatically redirected to the interactive API documentation)*.
 
+2.  **Find the Endpoint.**
+    Locate the **POST /predict/video** section and click **Try it out**.
 
+3.  **Upload Video.**
+    * You can use your own video file (`.mp4`, `.avi`, or `.mkv`).
+    * **Don't have a video?** Use the `test_video.mp4` provided in this repository for a quick test.
 
+4.  **Run Processing.**
+    Click **Execute** and wait for the model to process the video.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## **How to Run (Docker)**
-
-You don't need to install Python or CUDA. Just use Docker.
-
-1. Build the Image
-
-docker build -t yolo-mot-app .
-
-
-2. Run the Container
-
-docker run -p 8000:8000 yolo-mot-app
-
-
-3. Usage
-
-Open your browser and go to:
-👉 http://localhost:8000/docs
-
-Click on POST /predict/video.
-
-Click Try it out.
-
-Upload your video file (mp4/avi).
-
-Click Execute and download the processed result.
-
-
-**Local Development (No Docker)**
-
-If you want to run it without Docker:
-
-Create venv and install dependencies:
-
-pip install -r requirements.txt
-
-
-Run server:
-
-uvicorn main:app --reload
+5.  **Get Result.**
+    After processing is complete, click the **Download link** in the response section to save the `processed_result.avi` file.
