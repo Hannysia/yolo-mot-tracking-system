@@ -35,7 +35,7 @@ This method requires no local Python configuration.
 
 1.  **Pull and run the pre-built image:**
     ```bash
-    docker run -p 8000:8000 anykn/yolo-mot-app:v1.0
+    docker run -p 8000:8000 anykn/yolo-mot-app:v1.1
     ```
 
 2.  **Or build from source:**
