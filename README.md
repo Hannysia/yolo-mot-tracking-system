@@ -6,6 +6,11 @@
 
 A FastAPI-based application for object detection and tracking using a fine-tuned YOLOv8 model and ByteTrack algorithm. The system processes video inputs to detect pedestrians, track their IDs across frames, and output a compatible AVI video file.
 
+<p align="center">
+  <img src="docs/demo.gif" width="750" alt="MOT YOLO Tracking Demo">
+</p>
+
+
 ## Features
 
 * **Custom Detection:** YOLOv8n model fine-tuned on the MOT17 dataset specifically for pedestrian detection.
